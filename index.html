@@ -2,161 +2,87 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Precificador Pro</title>
+<title>Precificador Pro - Klick Variedades</title>
 
 <!-- 📊 LIB EXCEL -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #0f172a, #1e293b);
   color: #fff;
   margin: 0;
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
 }
-
-.container {
-  width: 100%;
-  max-width: 2000px;
-}
-
-h1 {
-  text-align: center;
-  color: #38bdf8;
-  margin-bottom: 20px;
-}
-
+.container { width: 100%; max-width: 1400px; }
+h1 { text-align: center; color: #ff4d2d; margin-bottom: 20px; }
 .box {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(10px);
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 0 20px rgba(56,189,248,0.2);
-  width: 100%;
+  box-shadow: 0 0 20px rgba(255, 77, 45, 0.2);
 }
-
-input, button {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 8px;
-  border: none;
-}
-
-input {
-  background: #0f172a;
-  color: #fff;
-  border: 1px solid #38bdf8;
-}
-
-button {
-  background: #38bdf8;
-  color: #000;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  background: #0ea5e9;
-}
-
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  min-width: 1000px;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #334155;
-  text-align: center;
-  white-space: nowrap;
-}
-
-th {
-  color: #38bdf8;
-}
-
-.delete-btn {
-  background: #ef4444;
-  color: white;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-#resultado {
-  margin-top: 10px;
-  font-size: 18px;
-  color: #22c55e;
-}
+input, button { padding: 10px; margin: 5px; border-radius: 8px; border: none; }
+input { background: #0f172a; color: #fff; border: 1px solid #ff4d2d; }
+button { background: #ff4d2d; color: #fff; cursor: pointer; font-weight: bold; }
+button:hover { background: #e63e1f; }
+.table-container { width: 100%; overflow-x: auto; }
+table { width: 100%; min-width: 1100px; border-collapse: collapse; }
+th, td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; }
+th { color: #ff4d2d; }
+.delete-btn { background: #ef4444; color: white; }
+#resultado { margin-top: 10px; font-size: 18px; color: #22c55e; font-weight: bold; }
+.tax-info { font-size: 12px; color: #94a3b8; margin-top: 5px; }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-
-<h1>🚀 Precificador Inteligente</h1>
+<h1>🚀 Precificador Klick Variedades</h1>
 
 <div class="box">
   <h3>Adicionar Produto</h3>
-
   <input type="text" id="nome" placeholder="Nome do produto">
   <input type="text" id="categoria" placeholder="Categoria">
-
   <input type="number" id="custoUnit" placeholder="Custo unitário (R$)" oninput="calcularTotal()">
   <input type="number" id="quantidade" placeholder="Quantidade" oninput="calcularTotal()">
   <input type="number" id="frete" placeholder="Frete total (R$)" oninput="calcularTotal()">
-  <input type="number" id="custoTotal" placeholder="Custo total (R$)" readonly>
+  <input type="number" id="custoTotal" placeholder="Custo Total Compra (R$)" readonly title="Total gasto na compra desta quantidade">
 
   <br>
-
-  <!-- ✔ SHOPEE CHECKBOX -->
-  <label style="margin-left:5px;">
-    <input type="checkbox" id="shopee">
-    Já cadastrado na Shopee
+  <label style="margin-left:5px; color: #ff4d2d; font-weight: bold;">
+    <input type="checkbox" id="shopee"> Venda pela Shopee (Comissão 20% + R$ 4,00)
   </label>
+  <p class="tax-info">*Considerando 14% comissão + 6% Frete Grátis + R$ 4,00 de taxa fixa por item.</p>
 
-  <br><br>
-
+  <br>
   <button onclick="salvar()">Calcular e Salvar</button>
   <button onclick="gerarRelatorio()">📄 Baixar Excel</button>
-
   <div id="resultado"></div>
 </div>
 
 <div class="box">
-  <h3>📊 Histórico</h3>
-
+  <h3>📊 Histórico de Precificação</h3>
   <div class="table-container">
     <table>
       <thead>
         <tr>
           <th>Produto</th>
-          <th>Categoria</th>
-          <th>Custo Unit.</th>
           <th>Qtd</th>
-          <th>Frete</th>
+          <th>Custo Unit.</th>
+          <th>Total Gasto (Compra)</th>
+          <th>Taxas MKT</th>
           <th>Preço Venda</th>
-          <th>Lucro</th>
-          <th>Data</th>
+          <th>Lucro Líquido Unit.</th>
           <th>Shopee</th>
           <th>Ação</th>
         </tr>
@@ -164,9 +90,7 @@ th {
       <tbody id="tabela"></tbody>
     </table>
   </div>
-
 </div>
-
 </div>
 
 <script>
@@ -174,7 +98,6 @@ function calcularTotal() {
   let unit = parseFloat(document.getElementById("custoUnit").value) || 0;
   let qtd = parseInt(document.getElementById("quantidade").value) || 0;
   let frete = parseFloat(document.getElementById("frete").value) || 0;
-
   let total = (unit * qtd) + frete;
   document.getElementById("custoTotal").value = total.toFixed(2);
 }
@@ -187,37 +110,48 @@ function salvar() {
   let frete = parseFloat(document.getElementById("frete").value) || 0;
   let shopee = document.getElementById("shopee").checked;
 
-  if (!nome || !categoria || !unit || !qtd) {
-    alert("Preencha todos os campos!");
+  if (!nome || !unit || !qtd) {
+    alert("Preencha Nome, Custo e Quantidade!");
     return;
   }
 
-  let custoTotal = (unit * qtd) + frete;
-  let custoFinalUnit = custoTotal / qtd;
+  let gastoTotalCompra = (unit * qtd) + frete;
+  let custoFinalUnit = gastoTotalCompra / qtd;
+  
+  // Margem de lucro aplicada sobre o custo total (incluindo taxas e impostos)
+  let margemLucroDesejada = 0.30; 
+  let precoVenda, taxasTotais, lucroFinal;
 
-  let precoVenda = custoFinalUnit / (1 - 0.15);
-  let lucro = precoVenda - custoFinalUnit;
+  if (shopee) {
+    // Fórmula: Preço = (CustoUnit + TaxaFixa) / (1 - Comissão% - MargemLucro%)
+    let divisor = (1 - 0.20 - margemLucroDesejada); 
+    precoVenda = (custoFinalUnit + 4) / divisor;
+    taxasTotais = (precoVenda * 0.20) + 4;
+  } else {
+    let divisorPadrao = (1 - 0.15 - margemLucroDesejada);
+    precoVenda = custoFinalUnit / divisorPadrao;
+    taxasTotais = precoVenda * 0.15;
+  }
 
+  lucroFinal = precoVenda - taxasTotais - custoFinalUnit;
   let data = new Date().toLocaleString();
 
   let produto = {
-    nome,
-    categoria,
+    nome, categoria,
     unit: custoFinalUnit.toFixed(2),
-    qtd,
-    frete: frete.toFixed(2),
+    totalGasto: gastoTotalCompra.toFixed(2),
+    taxas: taxasTotais.toFixed(2),
     preco: precoVenda.toFixed(2),
-    lucro: lucro.toFixed(2),
-    data,
-    shopee
+    lucro: lucroFinal.toFixed(2),
+    qtd, data, shopee
   };
 
   let lista = JSON.parse(localStorage.getItem("produtos")) || [];
   lista.push(produto);
   localStorage.setItem("produtos", JSON.stringify(lista));
 
-  document.getElementById("resultado").innerHTML =
-    `Preço ideal: R$ ${precoVenda.toFixed(2)} | Lucro unitário: R$ ${lucro.toFixed(2)}`;
+  document.getElementById("resultado").innerHTML = 
+    `Preço Venda: R$ ${precoVenda.toFixed(2)} | Lucro Real Unit: R$ ${lucroFinal.toFixed(2)}`;
 
   carregar();
 }
@@ -225,21 +159,19 @@ function salvar() {
 function carregar() {
   let tabela = document.getElementById("tabela");
   tabela.innerHTML = "";
-
   let lista = JSON.parse(localStorage.getItem("produtos")) || [];
 
   lista.forEach((p, index) => {
     tabela.innerHTML += `
       <tr>
         <td>${p.nome}</td>
-        <td>${p.categoria}</td>
-        <td>R$ ${p.unit}</td>
         <td>${p.qtd}</td>
-        <td>R$ ${p.frete}</td>
-        <td>R$ ${p.preco}</td>
-        <td>R$ ${p.lucro}</td>
-        <td>${p.data}</td>
-        <td><input type="checkbox" disabled ${p.shopee ? "checked" : ""}></td>
+        <td>R$ ${p.unit}</td>
+        <td style="color: #38bdf8;">R$ ${p.totalGasto}</td>
+        <td>R$ ${p.taxas}</td>
+        <td style="color: #ff4d2d; font-weight: bold;">R$ ${p.preco}</td>
+        <td style="color: #22c55e;">R$ ${p.lucro}</td>
+        <td>${p.shopee ? "🟠 Sim" : "⚪ Não"}</td>
         <td><button class="delete-btn" onclick="excluir(${index})">Excluir</button></td>
       </tr>
     `;
@@ -247,41 +179,37 @@ function carregar() {
 }
 
 function excluir(index) {
-  let lista = JSON.parse(localStorage.getItem("produtos")) || [];
-  lista.splice(index, 1);
-  localStorage.setItem("produtos", JSON.stringify(lista));
-  carregar();
+  if(confirm("Deseja excluir este item?")) {
+    let lista = JSON.parse(localStorage.getItem("produtos")) || [];
+    lista.splice(index, 1);
+    localStorage.setItem("produtos", JSON.stringify(lista));
+    carregar();
+  }
 }
 
 function gerarRelatorio() {
   let lista = JSON.parse(localStorage.getItem("produtos")) || [];
-
-  if (lista.length === 0) {
-    alert("Nenhum produto cadastrado!");
-    return;
-  }
+  if (lista.length === 0) { alert("Histórico vazio!"); return; }
 
   let dados = lista.map(p => ({
     Produto: p.nome,
-    Categoria: p.categoria,
     Quantidade: p.qtd,
-    "Custo Unitário": p.unit,
-    Frete: p.frete,
-    "Preço Venda": p.preco,
-    Lucro: p.lucro,
-    Data: p.data,
-    Shopee: p.shopee ? "Sim" : "Não"
+    "Custo Unit": p.unit,
+    "Total Gasto Compra": p.totalGasto,
+    "Taxas MKT": p.taxas,
+    "Preco Venda": p.preco,
+    "Lucro Líquido Unit": p.lucro,
+    Shopee: p.shopee ? "Sim" : "Não",
+    Data: p.data
   }));
 
   let ws = XLSX.utils.json_to_sheet(dados);
   let wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Produtos");
-
-  XLSX.writeFile(wb, "relatorio_produtos.xlsx");
+  XLSX.utils.book_append_sheet(wb, ws, "Precificacao");
+  XLSX.writeFile(wb, "precificador_klick_variedades_v2.xlsx");
 }
 
 carregar();
 </script>
-
 </body>
 </html>
